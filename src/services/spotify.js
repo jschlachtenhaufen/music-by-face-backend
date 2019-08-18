@@ -22,8 +22,8 @@ const spotify = {
         if (spotify._isTokenValid()) {
             next(spotify.token.value);
         } else {
-            const { CLIENT_ID, CLIENT_SECRET } = process.env;
-            const auth = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64');
+            const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } = process.env;
+            const auth = Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString('base64');
 
             const options = {
                 method: 'POST',
@@ -65,19 +65,11 @@ const spotify = {
             uri: `${SEARCH_URL}`,
             headers: { Authorization: `Bearer ${token}` },
             json: true,
-            qs: {
-                seed_genres: req.genre,
-                target_energy: req.energy,
-                target_acousticness: req.acousticness,
-                target_danceability: req.danceability,
-                target_valence: req.valence,
-                limit: 1,
-                mode: req.mode,
-            },
+            qs: req.query,
         };
 
-        rp(options).then((track) => {
-            res.send(track);
+        rp(options).then((tracks) => {
+            res.send(tracks.tracks);
         }).catch((err) => {
             res.send(err);
         });
